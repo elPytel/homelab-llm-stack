@@ -7,6 +7,9 @@ MODELS := mistral:7b-instruct-q4_K_M zephyr:7b-beta-q4_K_M olmo-3:7b-instruct-q4
 MODEL_NAME := $(word 1, $(MODELS))
 ENV_FILE := .env
 
+SYSTEMD_SERVICE  := ai-stack.service
+SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
+
 # Detekce NVIDIA GPU na hostiteli
 HAS_NVIDIA := $(shell which nvidia-smi 2>/dev/null)
 
@@ -27,8 +30,7 @@ $(CONFIG_PATH):
 
 install:
 	@echo "Instaluji závislosti..."
-	sudo apt-get update
-	sudo apt-get install -y docker.io docker-compose
+	@./install.sh
 	@touch $@
 
 ${ENV_FILE}: .env.example
@@ -60,20 +62,36 @@ logs:
 status:
 	docker compose $(COMPOSE_FILES) stats --no-stream
 
-# Rychlý test otevřeného FOSS modelu
 test-model:
 	@echo "Stahuji a spouštím testovací model Mistral..."
 	docker exec -it ollama ollama run $(MODEL_NAME)
 
+user-linger:
+	@echo "Povolování user linger pro systemd službu..."
+	@loginctl enable-linger $(USER)
+	@echo "User linger povolen."
+
+systemd-install: user-linger
+	@echo "Instaluji systemd službu..."
+	@mkdir -p $(SYSTEMD_USER_DIR)
+	@cp ai-stack.service $(SYSTEMD_USER_DIR)/
+	@systemctl --user daemon-reload
+	@systemctl --user enable ai-stack.service
+	@systemctl --user start ai-stack.service
+	@echo "Služba nainstalována a spuštěna. Stav služby:"
+	@systemctl --user status ai-stack.service
+
 help:
 	@echo "Použití:"
-	@echo "  make up            - Spustí kontejnery a zajistí modely"
-	@echo "  make down          - Zastaví kontejnery"
-	@echo "  make logs          - Sleduje logy kontejnerů"
-	@echo "  make status        - Zobrazí stav kontejnerů"
-	@echo "  make test-model    - Otestuje model Mistral"
-	@echo "  make ensure-models - Zajistí, že všechny modely jsou staženy"
-	@echo "  make help          - Zobrazí tuto nápovědu"
+	@echo "  make up              - Spustí kontejnery a zajistí modely"
+	@echo "  make down            - Zastaví kontejnery"
+	@echo "  make logs            - Sleduje logy kontejnerů"
+	@echo "  make status          - Zobrazí stav kontejnerů"
+	@echo "  make test-model      - Otestuje model Mistral"
+	@echo "  make ensure-models   - Zajistí, že všechny modely jsou staženy"
+	@echo "  make user-linger     - Povolí user linger pro systemd službu"
+	@echo "  make systemd-install - Nainstaluje a spustí systemd službu"
+	@echo "  make help            - Zobrazí tuto nápovědu"
 
 clean:
 	@echo "Odstraňuji kontejner a konfigurace..."

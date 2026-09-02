@@ -49,3 +49,29 @@ Na P330 (CPU režim): Spolkne cca 5,5 GB z operační RAM a poběží bez probl�
 Na Bazzite (GTX 1070 Ti – 8 GB VRAM): Pohodlně se vejde celý do 8GB VRAM, přičemž zbydou ještě cca 2,5–3 GB pro kontext a systém.
 
 Pokud bych sáhl po větším bráškovi Mistral NeMo Instruct (12B) (`mistral-nemo:instruct`), ten má cca 7,1 GB. Ten by se na 8GB VRAM dostal na hranu, ale základní 7B `mistral:instruct` je pro 8GB kartu optimální střed.
+
+## Automatické spouštění
+
+V Bazzite (který je postavený na atomické Fedoře s immutable kořenem) je standardem pro orchestraci kontejnerů bez root práv **systemd user service** s **Podmanem** nebo **Docker Compose**.
+
+Nejčistší a nejspolehlivější sysadmin cesta pro Bazzite je vytvořit systemd unitu pod vaším uživatelem. Ta zajistí, že se stack nastartuje ihned po bootu virtuálky.
+
+Zavede službu do systemd a rovnou ji nastartuje:
+
+```bash
+make systemd-install
+```
+
+### Kontrola stavu a diagnostika
+
+Zda se stack správně zavedl a jaké má logy, zkontroluješ standardními příkazy:
+
+```bash
+# Stav služby
+systemctl --user status ai-stack.service
+
+# Sledování logů při bootu
+journalctl --user -u ai-stack.service -f
+```
+
+Při každém dalším startu Bazzite (např. probuzením Zalmana přes Wake-on-LAN nebo sepnutím zásuvky) systemd automaticky zavolá `make up`, Makefile detekuje přítomnost NVIDIA karty a Ollama s WebUI okamžitě naběhnou s GPU akcelerací.

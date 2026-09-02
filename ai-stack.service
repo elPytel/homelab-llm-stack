@@ -1,0 +1,20 @@
+[Unit]
+Description=AI Stack (Ollama + Open WebUI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Cesta k tvému naklonovanému repozitáři:
+WorkingDirectory=%h/Git/ai-stack
+
+# Spuštění přes tvůj Makefile (který automaticky detekuje NVIDIA GPU):
+ExecStart=/usr/bin/make up
+# Bezpečné zastavení stacku při vypínání VM:
+ExecStop=/usr/bin/make down
+
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

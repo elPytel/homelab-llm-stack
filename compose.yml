@@ -6,7 +6,7 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ${CONFIG_PATH:-./config}/ollama:/root/.ollama
+      - ${CONFIG_PATH:-./config}/ollama:/root/.ollama:z
     environment:
       - TZ=${TZ:-Etc/UTC}
       - OLLAMA_KEEP_ALIVE=${OLLAMA_KEEP_ALIVE:-5m}
@@ -18,7 +18,7 @@ services:
     ports:
       - "3000:8080"
     volumes:
-      - ${CONFIG_PATH:-./config}/open-webui:/app/backend/data
+      - ${CONFIG_PATH:-./config}/open-webui:/app/backend/data:z
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - WEBUI_AUTH=true
