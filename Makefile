@@ -3,8 +3,9 @@ SHELL := /bin/bash
 export CONFIG_PATH ?= $(CURDIR)/config
 export TZ ?= Etc/UTC
 
-MODELS := mistral:7b-instruct-q4_K_M zephyr:7b-beta-q4_K_M olmo:7b-instruct-q4_K_M mistral:instruct
+MODELS := mistral:7b-instruct-q4_K_M zephyr:7b-beta-q4_K_M olmo-3:7b-instruct-q4_K_M mistral:instruct
 MODEL_NAME := $(word 1, $(MODELS))
+ENV_FILE := .env
 
 # Detekce NVIDIA GPU na hostiteli
 HAS_NVIDIA := $(shell which nvidia-smi 2>/dev/null)
@@ -24,10 +25,20 @@ all: up
 $(CONFIG_PATH):
 	@mkdir -p $@
 
-up: | $(CONFIG_PATH)
+install:
+	@echo "Instaluji závislosti..."
+	sudo apt-get update
+	sudo apt-get install -y docker.io docker-compose
+	@touch $@
+
+${ENV_FILE}: .env.example
+	@echo "Vytvářím $@ soubor..."
+	@cp .env.example $@
+
+up: ${ENV_FILE} | $(CONFIG_PATH) install 
 	@echo $(MODE_MSG)
-	@mkdir -p ./config/ollama ./config/open-webui
-	docker compose $(COMPOSE_FILES) up -d
+	@mkdir -p "$(CONFIG_PATH)/ollama" "$(CONFIG_PATH)/open-webui"
+	docker compose --env-file $(ENV_FILE) $(COMPOSE_FILES) up -d
 	@$(MAKE) ensure-models
 
 ensure-models:
