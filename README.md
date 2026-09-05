@@ -9,6 +9,8 @@
     - [S podporou pro volání funkcí](#s-podporou-pro-volání-funkcí)
   - [Automatické spouštění](#automatické-spouštění)
     - [Kontrola stavu a diagnostika](#kontrola-stavu-a-diagnostika)
+  - [Přidání dalších uživatelů](#přidání-dalších-uživatelů)
+    - [Povolení modelů pro běžné uživatele (Globální nastavení)](#povolení-modelů-pro-běžné-uživatele-globální-nastavení)
 
 
 Docker files pro spouštění LLM (Large Language Model) stacku v domácím prostředí.
@@ -116,3 +118,12 @@ journalctl --user -u ai-stack.service -f
 ```
 
 Při každém dalším startu Bazzite systemd automaticky zavolá `make up`, Makefile detekuje přítomnost NVIDIA karty a Ollama s WebUI okamžitě naběhnou s GPU akcelerací.
+
+## Přidání dalších uživatelů
+
+### Povolení modelů pro běžné uživatele (Globální nastavení)
+
+1. Přihlaste se do Open WebUI pod svým Admin účtem.
+2. Vlevo dole klikni na svůj Profil -> Administrátorský panel (Admin Panel).
+3. Přejděte do záložky Nastavení (Settings) -> Modely (Models).
+4. Zkontroluj nastavení Viditelnost modelů (Model Visibility).
