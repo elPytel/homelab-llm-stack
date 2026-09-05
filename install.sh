@@ -26,9 +26,21 @@ if [[ "$OS_ID" =~ (debian|ubuntu) ]] || [[ "$OS_LIKE" =~ (debian|ubuntu) ]]; the
 elif [[ "$OS_ID" =~ (bazzite|fedora) ]] || [[ "$OS_LIKE" =~ (bazzite|fedora) ]]; then
     echo "Detekován Bazzite / Fedora / rpm-ostree systém..."
     
-    # V Bazzite je Docker předinstalovaný, stačí povolit a nastartovat službu
-    echo "Aktivuji a spouštím službu docker..."
-    sudo systemctl enable --now docker
+    if ! command -v podman >/dev/null 2>&1; then
+        echo "Podman není nainstalovaný. Instaluji Podman a podman-compose..."
+        sudo rpm-ostree install podman podman-compose
+        echo "Instalace bude aktivní po restartu systému. Restartuj Bazzite a spusť make up znovu."
+        exit 0
+    fi
+
+    if ! command -v podman-compose >/dev/null 2>&1 && ! podman compose version >/dev/null 2>&1; then
+        echo "Instaluji chybějící Podman Compose provider..."
+        sudo rpm-ostree install podman-compose
+        echo "Instalace bude aktivní po restartu systému. Restartuj Bazzite a spusť make up znovu."
+        exit 0
+    fi
+
+    echo "Používám rootless Podman; služba docker není potřeba."
     
     echo "Přidávám uživatele $CURRENT_USER do skupiny docker..."
     sudo usermod -aG docker "$CURRENT_USER"

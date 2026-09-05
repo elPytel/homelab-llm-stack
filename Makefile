@@ -1,5 +1,15 @@
 SHELL := /bin/bash
 
+CONTAINER_ENGINE := $(shell if command -v docker >/dev/null 2>&1; then echo docker; elif command -v podman >/dev/null 2>&1; then echo podman; fi)
+ifeq ($(CONTAINER_ENGINE),podman)
+PODMAN_COMPOSE := $(shell if command -v podman-compose >/dev/null 2>&1; then echo podman-compose; elif podman compose version >/dev/null 2>&1; then echo podman compose; fi)
+COMPOSE := $(if $(strip $(PODMAN_COMPOSE)),$(PODMAN_COMPOSE),podman-compose)
+EXEC := podman exec
+else
+COMPOSE := docker compose
+EXEC := docker exec
+endif
+
 export CONFIG_PATH ?= $(CURDIR)/config
 export TZ ?= Etc/UTC
 
@@ -37,34 +47,38 @@ ${ENV_FILE}: .env.example
 	@echo "Vytvářím $@ soubor..."
 	@cp .env.example $@
 
-up: ${ENV_FILE} | $(CONFIG_PATH) install 
+ip:
+	@echo "IP adresa hostitele:" 
+	@hostname -I
+
+up: ip ${ENV_FILE} | $(CONFIG_PATH) install
 	@echo $(MODE_MSG)
 	@mkdir -p "$(CONFIG_PATH)/ollama" "$(CONFIG_PATH)/open-webui"
-	docker compose --env-file $(ENV_FILE) $(COMPOSE_FILES) up -d
+	$(COMPOSE) --env-file $(ENV_FILE) $(COMPOSE_FILES) up -d
 	@$(MAKE) ensure-models
 
 ensure-models:
 	@for model in $(MODELS); do \
-		if docker exec ollama ollama list 2>/dev/null | grep -q "$$model"; then \
+		if $(EXEC) ollama ollama list 2>/dev/null | grep -q "$$model"; then \
 			echo "Model již existuje: $$model"; \
 		else \
 			echo "Stahuji model: $$model"; \
-			docker exec ollama ollama pull "$$model"; \
+			$(EXEC) ollama ollama pull "$$model"; \
 		fi; \
 	done
 
 down:
-	docker compose $(COMPOSE_FILES) down
+	$(COMPOSE) $(COMPOSE_FILES) down
 
 logs:
-	docker compose $(COMPOSE_FILES) logs -f
+	$(COMPOSE) $(COMPOSE_FILES) logs -f
 
 status:
-	docker compose $(COMPOSE_FILES) stats --no-stream
+	$(COMPOSE) $(COMPOSE_FILES) stats --no-stream
 
 test-model:
 	@echo "Stahuji a spouštím testovací model Mistral..."
-	docker exec -it ollama ollama run $(MODEL_NAME)
+	$(EXEC) -it ollama ollama run $(MODEL_NAME)
 
 user-linger:
 	@echo "Povolování user linger pro systemd službu..."
@@ -95,5 +109,5 @@ help:
 
 clean:
 	@echo "Odstraňuji kontejner a konfigurace..."
-	docker compose $(COMPOSE_FILES) down -v
+	$(COMPOSE) $(COMPOSE_FILES) down -v
 	rm -rf $(CONFIG_PATH)
