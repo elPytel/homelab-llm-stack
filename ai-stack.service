@@ -7,9 +7,9 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 # Cesta k tvému naklonovanému repozitáři:
-WorkingDirectory=%h/Git/ai-stack
+WorkingDirectory=%h/Git/homelab-llm-stack
 
-# Spuštění přes tvůj Makefile (který automaticky detekuje NVIDIA GPU):
+# Spuštění přes Makefile (který automaticky detekuje NVIDIA GPU):
 ExecStart=/usr/bin/make up
 # Bezpečné zastavení stacku při vypínání VM:
 ExecStop=/usr/bin/make down
