@@ -81,11 +81,11 @@ Ve webUI vám vyhodít chybu: `does not support tools`.
 
 - `mistral:7b-instruct-q4_K_M`: Původní instruktážní verze Mistral v0.1/v0.2 bez formátu pro volání funkcí.
 - `zephyr:7b-beta-q4_K_M`: Komunitní fine-tune postavený na původním Mistralu 7B; je laděný na přirozenou konverzaci (DPO), ale formátování pro nástroje v sobě nemá.
-- `olmo:7b-instruct-q4_K_M`: FOSS model od Allen Institute zaměřený na transparentnost vah a datasetů; nativní function calling nepodporuje.
 
 ### S podporou pro volání funkcí
 Podpora pro volání funkcí je dostupná pouze u modelu:
 - `mistral:instruct`: Oficiální novější Mistral (v0.3 / NeMo)
+- `olmo-3:7b-instruct-q4_K_M`: FOSS model od Allen Institute zaměřený na transparentnost vah a datasetů.
 
 Jak se vejde na můj hardware:
 - Na P330 (CPU režim): Spolkne cca 5,5 GB z operační RAM a běží bez problémů.

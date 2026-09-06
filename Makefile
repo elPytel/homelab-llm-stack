@@ -13,7 +13,7 @@ endif
 export CONFIG_PATH ?= $(CURDIR)/config
 export TZ ?= Etc/UTC
 
-MODELS := mistral:7b-instruct-q4_K_M zephyr:7b-beta-q4_K_M olmo-3:7b-instruct-q4_K_M mistral:instruct
+MODELS := mistral:7b-instruct-q4_K_M zephyr:7b-beta-q4_K_M olmo-3:7b-instruct-q4_K_M mistral:instruct qwen2.5-coder:7b
 MODEL_NAME := $(word 1, $(MODELS))
 ENV_FILE := .env
 
