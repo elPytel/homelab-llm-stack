@@ -15,7 +15,7 @@
 
 Docker files pro spouštění LLM (Large Language Model) stacku v domácím prostředí.
 
-Produční HW: Bazzite VM s passtrough GTX 1070 Ti (8 GB VRAM) a 24 GB RAM.
+Produční HW: Bazzite VM s passtrough GTX 1070 Ti (8 GB VRAM) a 16 GB RAM.
 
 Testovací HW: P330 i5-8500T s 24 GB RAM (CPU režim).
 
@@ -71,7 +71,7 @@ make
 Po úspěšném dokončení je WebUI dostupné na [http://localhost:3000](http://localhost:3000). První spuštění může trvat déle kvůli stažení image a modelů.
 
 > [!tip]
-> Chvíli může trvat než poprvé WebUI naběhne, dejte mu čas (pár minut).
+> Chvíli to může trvat než poprvé WebUI naběhne, dejte mu čas (pár minut).
 
 ## Modely
 
@@ -88,10 +88,10 @@ Podpora pro volání funkcí je dostupná pouze u modelu:
 - `mistral:instruct`: Oficiální novější Mistral (v0.3 / NeMo)
 
 Jak se vejde na můj hardware:
-- Na P330 (CPU režim): Spolkne cca 5,5 GB z operační RAM a poběží bez problémů.
+- Na P330 (CPU režim): Spolkne cca 5,5 GB z operační RAM a běží bez problémů.
 - Na Bazzite (GTX 1070 Ti – 8 GB VRAM): Pohodlně se vejde celý do 8GB VRAM, přičemž zbydou ještě cca 2,5–3 GB pro kontext a systém.
 
-Pokud bych sáhl po větším bráškovi Mistral NeMo Instruct (12B) (`mistral-nemo:instruct`), ten má cca 7,1 GB. Ten by se na 8GB VRAM dostal na hranu, ale základní 7B `mistral:instruct` je pro 8GB kartu optimální střed.
+Pokud bych sáhl po větším bráškovi Mistral NeMo Instruct (12B) (`mistral-nemo:instruct`), ten má cca 7,5 GB. Ten by se na 8GB VRAM dostal na hranu, ale základní 7B `mistral:instruct` je pro 8GB kartu optimální střed.
 
 ## Automatické spouštění
 
@@ -99,7 +99,7 @@ V Bazzite (který je postavený na atomické Fedoře s immutable kořenem) je st
 
 Nejčistší a nejspolehlivější sysadmin cesta pro Bazzite je vytvořit systemd unitu pod vaším uživatelem. Ta zajistí, že se stack nastartuje ihned po bootu virtuálky.
 
-Zavede službu do systemd a rovnou ji nastartuje:
+Tento příkaz vytvoří systemd unitu a rovnou ji nastartuje:
 
 ```bash
 make systemd-install
@@ -107,7 +107,7 @@ make systemd-install
 
 ### Kontrola stavu a diagnostika
 
-Zda se stack správně zavedl a jaké má logy, zkontroluješ standardními příkazy:
+Zda se stack správně zavedl a jaké má logy, zkontrolujete standardními příkazy:
 
 ```bash
 # Stav služby
