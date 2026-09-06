@@ -11,6 +11,10 @@ WorkingDirectory=%h/Git/homelab-llm-stack
 
 # Spuštění přes Makefile (který automaticky detekuje NVIDIA GPU):
 ExecStart=/usr/bin/make up
+
+# Update the repository (pull) after each start:
+PostStart=/bin/bash -c "cd %h/Git/homelab-llm-stack && git pull"
+
 # Bezpečné zastavení stacku při vypínání VM:
 ExecStop=/usr/bin/make down
 
