@@ -105,6 +105,9 @@ Tento příkaz vytvoří systemd unitu a rovnou ji nastartuje:
 make systemd-install
 ```
 
+> [!tip]
+> Součástí je automatická kontrola změn v repu a `git pull`. 
+
 ### Kontrola stavu a diagnostika
 
 Zda se stack správně zavedl a jaké má logy, zkontrolujete standardními příkazy:
