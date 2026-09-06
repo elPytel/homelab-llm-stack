@@ -89,6 +89,7 @@ systemd-install: user-linger
 	@echo "Instaluji systemd službu..."
 	@mkdir -p $(SYSTEMD_USER_DIR)
 	@cp ai-stack.service $(SYSTEMD_USER_DIR)/
+	@systemd-analyze --user verify $(SYSTEMD_USER_DIR)/$(SYSTEMD_SERVICE)
 	@systemctl --user daemon-reload
 	@systemctl --user enable ai-stack.service
 	@systemctl --user start ai-stack.service

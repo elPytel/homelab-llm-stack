@@ -6,14 +6,14 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# Cesta k tvému naklonovanému repozitáři:
+# Cesta k naklonovanému repozitáři:
 WorkingDirectory=%h/Git/homelab-llm-stack
 
-# Spuštění přes Makefile (který automaticky detekuje NVIDIA GPU):
-ExecStart=/usr/bin/make up
+# Aktualizace repozitáře před startem stacku:
+ExecStartPre=/usr/bin/git pull --ff-only
 
-# Update the repository (pull) after each start:
-PostStart=/bin/bash -c "cd %h/Git/homelab-llm-stack && git pull"
+# Spuštění přes Makefile:
+ExecStart=/usr/bin/make up
 
 # Bezpečné zastavení stacku při vypínání VM:
 ExecStop=/usr/bin/make down
